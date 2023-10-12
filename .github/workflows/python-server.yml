@@ -18,8 +18,9 @@ jobs:
       - name: Install dependencies
         run: pip install websockets
 
-      - name: Run Python server
-        run: python main.py
+      - name: Hello World
+        run: python ${{ env.DEVOPS_DIR }}/hello_world.py
+        shell: sh
 
 
 

@@ -15,12 +15,11 @@ jobs:
         with:
           python-version: 3.x
 
+      - name: Checkout code
+        uses: actions/checkout@v2
+
       - name: Install dependencies
         run: pip install websockets
 
-      - name: Hello World
-        run: python ${{ github.workspace }}/main.py
-        shell: sh
-
-
-
+      - name: Run Python server
+        run: python main.py

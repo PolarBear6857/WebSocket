@@ -19,5 +19,6 @@ jobs:
         run: pip install websockets
 
       - name: Run Python server
-        run: python WebSocket/main.py
+        run: /usr/bin/python3 main.py
+
 

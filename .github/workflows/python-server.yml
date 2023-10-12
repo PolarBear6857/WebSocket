@@ -20,7 +20,7 @@ jobs:
 
       - name: Run Python server
         working-directory: ${{ github.workspace }}
-        run: python main.py
+        run: python /main.py
 
 
 

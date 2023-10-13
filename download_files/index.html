@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <title>WebSocket Client</title>
+</head>
+<body>
+<input type="text" id="message" placeholder="Enter a message">
+<button id="button" onclick="sendMessage()">Send</button>
+<div id="messages"></div>
+
+<script>
+    const serverUri = "ws://localhost:8765";
+
+    let banned = false;
+
+    let websocket = new WebSocket(serverUri);
+
+    websocket.onopen = (event) => {
+        console.log("Connected to the server");
+        websocket.send("Connected")
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connected to the server</strong></p>");
+    };
+
+    websocket.onmessage = (event) => {
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", `<p>${event.data}</p>`);
+    };
+
+    window.addEventListener('beforeunload', function () {
+        websocket.send('Disconnected');
+    });
+
+    websocket.onclose = (event) => {
+        console.log("Connection closed");
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connection closed. Trying to reconnect...</strong></p>");
+
+        setTimeout(() => {
+            const newWebSocket = new WebSocket(serverUri);
+            newWebSocket.onopen = (event) => {
+                console.log("Reconnected to the server");
+                const messagesDiv = document.getElementById("messages");
+                messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Reconnected to the server</strong></p>");
+            };
+            newWebSocket.onmessage = websocket.onmessage;
+            newWebSocket.onclose = websocket.onclose;
+
+            websocket = newWebSocket;
+        }, 3000);
+    };
+
+    function sendMessage() {
+        if (banned) {
+            console.log("You are banned for 30 seconds.");
+            return;
+        }
+        const messageInput = document.getElementById("message");
+        const message = messageInput.value;
+
+
+        if (message.toLowerCase().includes("rum")) {
+            banned = true;
+            setTimeout(() => {
+                banned = false;
+                alert("You are no longer banned.");
+            }, 30000); // Ban for 30 seconds
+
+            alert("You are banned for 30 seconds.");
+            return;
+        } else {
+            websocket.send(message);
+        }
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", `<p><strong>You:</strong> ${message}</p>`);
+
+        messageInput.value = "";
+    }
+</script>
+</body>
+</html>

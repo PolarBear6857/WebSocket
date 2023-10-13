@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        div {
+            border: 2px solid #ccc;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+        }
+
+        #soubor, #navod {
+            width: 50%;
+            margin: 10px auto; /* Increased margin for spacing */
+        }
+
+        h2 {
+            background-color: #333;
+            color: #fff;
+            padding: 5px;
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #0074d9;
+            padding: 5px; /* Added padding for spacing */
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        code {
+            background-color: #f0f0f0;
+            padding: 2px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+<h1>WEBSOCKET SERVER</h1>
+<div id="soubor">
+    <h2>Soubory</h2>
+    <br>
+    <a href="download_files/index.html" download>Stažení HTML stránky</a>
+    <br><br>
+    <a href="download_files/main.py" download>Stažení Python souboru</a>
+    <br>
+</div>
+<div id="navod">
+    <h2>Návod</h2>
+    <p>Po stažení souborů index.html a main.py je ještě potřeba stáhnout websockets a python</p>
+    <p>Odkaz pro python: <a href="https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe">zde</a></p>
+    <p>Příkaz pro stažení websockets:<code> pip install websockets</code></p>
+    <p>Spusťte soubory pomocí nějakého IDE (pro HTML doporučuji WebStorm a pro Python doporučuji PyCharm)</p>
+    <p>Pro více klientů stačí spustit html soubor vícekrát</p>
+</div>
+</body>
+</html>

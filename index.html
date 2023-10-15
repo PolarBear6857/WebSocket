@@ -1,71 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="">
 <head>
-    <meta charset="UTF-8">
-    <title>WebSocket</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        div {
-            border: 2px solid #ccc;
-            padding: 10px;
-            margin: 10px;
-            border-radius: 5px;
-        }
-
-        #soubor, #navod {
-            width: 50%;
-            margin: 10px auto;
-        }
-
-        h2 {
-            background-color: #333;
-            color: #fff;
-            padding: 5px;
-            margin: 0;
-        }
-
-        a {
-            text-decoration: none;
-            color: #0074d9;
-            padding: 5px;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        code {
-            background-color: #f0f0f0;
-            padding: 2px;
-            font-family: monospace;
-        }
-    </style>
+    <title>WebSocket Client</title>
 </head>
 <body>
-<h1>WEBSOCKET SERVER</h1>
-<div id="soubor">
-    <h2>Soubory</h2>
-    <br>
-    <a href="download_files/index.html" download>Stažení HTML stránky</a>
-    <br><br>
-    <a href="download_files/main.py" download>Stažení Python souboru</a>
-    <br>
-</div>
-<div id="navod">
-    <h2>Návod</h2>
-    <p>Jelikož jsem nepřišel na to, jak hostovat html stránku a zároveň python server, tak jsem to udělal následovně:</p>
-    <p>Po stažení souborů index.html a main.py je ještě potřeba stáhnout websockets a python</p>
-    <p>Odkaz pro python: <a href="https://www.python.org/ftp/python/3.12.0/python-3.12.0-amd64.exe">zde</a></p>
-    <p>Příkaz pro stažení websockets:<code> pip install websockets</code> (použijte windows powershell)</p>
-    <p>Spusťte soubory pomocí nějakého IDE (pro HTML doporučuji WebStorm a pro Python doporučuji PyCharm)</p>
-    <p>Pro více klientů stačí spustit html soubor vícekrát</p>
-</div>
+<input type="text" id="message" placeholder="Enter a message">
+<button id="button" onclick="sendMessage()">Send</button>
+<div id="messages"></div>
+
+<script>
+    const serverUri = "ws://localhost:8765";
+
+    let banned = false;
+
+    let websocket = new WebSocket(serverUri);
+
+    websocket.onopen = (event) => {
+        console.log("Connected to the server");
+        websocket.send("Connected")
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connected to the server</strong></p>");
+    };
+
+    websocket.onmessage = (event) => {
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", `<p>${event.data}</p>`);
+    };
+
+    window.addEventListener('beforeunload', function () {
+        websocket.send('Disconnected');
+    });
+
+    websocket.onclose = (event) => {
+        console.log("Connection closed");
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connection closed. Trying to reconnect...</strong></p>");
+
+        setTimeout(() => {
+            const newWebSocket = new WebSocket(serverUri);
+            newWebSocket.onopen = (event) => {
+                console.log("Reconnected to the server");
+                const messagesDiv = document.getElementById("messages");
+                messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Reconnected to the server</strong></p>");
+            };
+            newWebSocket.onmessage = websocket.onmessage;
+            newWebSocket.onclose = websocket.onclose;
+
+            websocket = newWebSocket;
+        }, 3000);
+    };
+
+    function sendMessage() {
+        const messageInput = document.getElementById("message");
+        const message = messageInput.value;
+        websocket.send(message);
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", `<p><strong>You:</strong> ${message}</p>`);
+
+        messageInput.value = "";
+    }
+</script>
 </body>
 </html>

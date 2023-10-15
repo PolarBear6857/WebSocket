@@ -34,7 +34,7 @@
         messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connection closed. Trying to reconnect...</strong></p>");
 
         setTimeout(() => {
-            const newWebSocket = new WebSocket(serverUri);
+            const newWebSocket = new WebSocket("wss://python-websocket-iipf.onrender.com");
             newWebSocket.onopen = (event) => {
                 console.log("Reconnected to the server");
                 const messagesDiv = document.getElementById("messages");

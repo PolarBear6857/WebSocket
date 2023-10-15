@@ -9,7 +9,9 @@
 <div id="messages"></div>
 
 <script>
-    const serverUri = "ws://localhost:8765";
+    const serverHost = "https://python-websocket-iipf.onrender.com";  // Replace with the actual server host
+    const serverPort = "8765";  // Replace with the actual server port
+    const serverUri = `ws://${serverHost}:${serverPort}`;
 
     let banned = false;
 

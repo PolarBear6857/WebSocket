@@ -9,14 +9,13 @@
 <div id="messages"></div>
 
 <script>
-    // Update the WebSocket server URL to the one hosted on Render
-    const serverUri = "https://python-websocket-iipf.onrender.com"; // Replace with your Render URL
+    const serverUri = "wss://python-websocket-iipf.onrender.com";
 
     let websocket = new WebSocket(serverUri);
 
     websocket.onopen = (event) => {
         console.log("Connected to the server");
-        websocket.send("Connected");
+        websocket.send("Connected")
         const messagesDiv = document.getElementById("messages");
         messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connected to the server</strong></p>");
     };

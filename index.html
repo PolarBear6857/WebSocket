@@ -9,17 +9,14 @@
 <div id="messages"></div>
 
 <script>
-    const serverHost = "https://python-websocket-iipf.onrender.com";  // Replace with the actual server host
-    const serverPort = "8765";  // Replace with the actual server port
-    const serverUri = `ws://${serverHost}:${serverPort}`;
-
-    let banned = false;
+    // Update the WebSocket server URL to the one hosted on Render
+    const serverUri = "https://python-websocket-iipf.onrender.com"; // Replace with your Render URL
 
     let websocket = new WebSocket(serverUri);
 
     websocket.onopen = (event) => {
         console.log("Connected to the server");
-        websocket.send("Connected")
+        websocket.send("Connected");
         const messagesDiv = document.getElementById("messages");
         messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connected to the server</strong></p>");
     };

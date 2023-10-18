@@ -1,105 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="">
 <head>
-    <title>Chatroom</title>
-    <style>
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-        }
-
-        .modal-content {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background-color: white;
-            padding: 20px;
-            text-align: center;
-        }
-    </style>
+    <title>WebSocket Client</title>
 </head>
 <body>
 <input type="text" id="message" placeholder="Enter a message">
-<button onclick="sendMessage()">Send</button>
+<button id="button" onclick="sendMessage()">Send</button>
 <div id="messages"></div>
 
-<div class="modal" id="myModal">
-    <div class="modal-content">
-        <p id="modalMessage"></p>
-    </div>
-</div>
-
 <script>
-    const websocket = new WebSocket("wss://python-websocket-iipf.onrender.com");
 
-    let isBanned = false;
+    let websocket = new WebSocket("wss://python-websocket-iipf.onrender.com");
 
     websocket.onopen = (event) => {
         console.log("Connected to the server");
+        websocket.send("Connected")
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connected to the server</strong></p>");
     };
 
-
-    //zobrazeni boxiku
     websocket.onmessage = (event) => {
         const messagesDiv = document.getElementById("messages");
-        const message = event.data;
-
-        if (message === "You are already connected elsewhere." || message === "You are permanently banned.") {
-            displayModal(message);
-            if (message === "You are permanently banned.") {
-                isBanned = true;
-            }
-        } else {
-            const sanitizedMessage = escapeHtml(message);
-            messagesDiv.insertAdjacentHTML("afterbegin", `<p>${sanitizedMessage}</p>`);
-        }
+        messagesDiv.insertAdjacentHTML("afterbegin", `<p>${event.data}</p>`);
     };
+
+    window.addEventListener('beforeunload', function () {
+        websocket.send('Disconnected');
+    });
 
     websocket.onclose = (event) => {
         console.log("Connection closed");
+        const messagesDiv = document.getElementById("messages");
+        messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Connection closed. Trying to reconnect...</strong></p>");
+
+        setTimeout(() => {
+            const newWebSocket = new WebSocket("wss://python-websocket-iipf.onrender.com");
+            newWebSocket.onopen = (event) => {
+                console.log("Reconnected to the server");
+                const messagesDiv = document.getElementById("messages");
+                messagesDiv.insertAdjacentHTML("afterbegin", "<p><strong>Reconnected to the server</strong></p>");
+            };
+            newWebSocket.onmessage = websocket.onmessage;
+            newWebSocket.onclose = websocket.onclose;
+
+            websocket = newWebSocket;
+        }, 3000);
     };
 
-    // send
     function sendMessage() {
         const messageInput = document.getElementById("message");
         const message = messageInput.value;
-
-        if (message.toLowerCase().includes("rum")) {
-            if (isBanned) {
-                displayModal("You are permanently banned.");
-            } else {
-                websocket.send(message);
-            }
-        } else {
-            websocket.send(message);
-        }
-
+        websocket.send(message);
         const messagesDiv = document.getElementById("messages");
-        const sanitizedMessage = escapeHtml(message);
-        messagesDiv.insertAdjacentHTML("afterbegin", `<p><strong>You:</strong> ${sanitizedMessage}</p>`);
+        messagesDiv.insertAdjacentHTML("afterbegin", `<p><strong>You:</strong> ${message}</p>`);
+
         messageInput.value = "";
-    }
-
-
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.innerText = text;
-        return div.innerHTML;
-    }
-
-    // alert krabice
-    function displayModal(message) {
-        const modal = document.getElementById("myModal");
-        const modalMessage = document.getElementById("modalMessage");
-        modalMessage.textContent = message;
-        modal.style.display = "block";
     }
 </script>
 </body>
